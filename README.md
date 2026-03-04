@@ -203,7 +203,7 @@ hindi-asr-whisper/
 **Joshuva Vinith**  
 B.Tech — Artificial Intelligence & Data Science
 
-📧 joshuvinith@gmail.com  
+📧 joshuavinith@gmail.com  
 🔗 [HuggingFace](https://huggingface.co/joshuavinith) | [LinkedIn](https://linkedin.com/in/joshuva-vinith)
 
 ---
