@@ -201,10 +201,10 @@ hindi-asr-whisper/
 ## Author
 
 **Joshuva Vinith**  
-B.Tech — Artificial Intelligence & Data Science (2025)
+B.Tech — Artificial Intelligence & Data Science
 
 📧 joshuvinith@gmail.com  
-🔗 [HuggingFace](https://huggingface.co/joshuavinith) | [LinkedIn](https://linkedin.com/in/joshuvavinith)
+🔗 [HuggingFace](https://huggingface.co/joshuavinith) | [LinkedIn](https://linkedin.com/in/joshuva-vinith)
 
 ---
 
