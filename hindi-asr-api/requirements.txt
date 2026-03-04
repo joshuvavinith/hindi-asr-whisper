@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+transformers
+librosa
+python-multipart
+huggingface_hub
+soundfile
