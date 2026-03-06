@@ -2,6 +2,8 @@
 
 > End-to-end Hindi Automatic Speech Recognition pipeline: dataset engineering, Whisper-small fine-tuning, disfluency detection, and lattice-based evaluation.
 
+[![Build & Push Docker](https://github.com/joshuvavinith/hindi-asr-whisper/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/joshuvavinith/hindi-asr-whisper/actions/workflows/docker-publish.yml)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Model on HuggingFace](https://img.shields.io/badge/🤗%20Model-joshuavinith%2Fwhisper--small--hindi-blue)](https://huggingface.co/joshuavinith/whisper-small-hindi)
 [![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-HuggingFace%20Spaces-green)](https://huggingface.co/spaces/joshuavinith/hindi-asr-demo)
 [![FastAPI](https://img.shields.io/badge/API-FastAPI-009688)](https://fastapi.tiangolo.com/)
@@ -37,9 +39,13 @@ Raw Audio (.wav) ──► Preprocessing Pipeline ──► Fine-tuned Whisper-s
 ```
 FastAPI App
     │
-    ├── POST /transcribe  ──► load audio ──► processor ──► model.generate() ──► transcript
+    ├── POST /transcribe          ──► chunked audio ──► model.generate() ──► transcript + confidence
+    ├── POST /transcribe/stream   ──► long audio, per-chunk results with timestamps
+    ├── POST /transcribe/batch    ──► multiple files ──► list of transcripts
+    ├── POST /detect-language     ──► Whisper language detection ──► language code + warning
+    ├── GET  /metrics             ──► Prometheus metrics
     ├── GET  /health
-    └── GET  /docs        ──► interactive Swagger UI
+    └── GET  /docs                ──► interactive Swagger UI
 ```
 
 ---
@@ -175,9 +181,13 @@ hindi-asr-whisper/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/` | API status |
+| GET | `/` | API status + active device (CPU/GPU) |
 | GET | `/health` | Health check |
-| POST | `/transcribe` | Transcribe Hindi audio file |
+| POST | `/transcribe` | Transcribe a Hindi audio file (with confidence score) |
+| POST | `/transcribe/stream` | Transcribe long audio — returns per-chunk results with timestamps |
+| POST | `/transcribe/batch` | Transcribe multiple audio files in one request |
+| POST | `/detect-language` | Detect audio language; warns if not Hindi |
+| GET | `/metrics` | Prometheus metrics (request count, latency, …) |
 | GET | `/docs` | Interactive Swagger UI |
 
 ---
@@ -186,7 +196,49 @@ hindi-asr-whisper/
 
 - Python 3.9+
 - Docker (for containerized deployment)
-- CPU inference supported (no GPU required)
+- CPU inference supported (no GPU required); GPU auto-detected at runtime
+
+---
+
+## Running the Gradio Demo
+
+```bash
+pip install -r requirements.txt
+python demo.py
+```
+
+Open `http://localhost:7860` in your browser, upload a `.wav` or `.mp3` file, and see the transcript.
+
+---
+
+## Running Tests
+
+```bash
+pip install pytest httpx pytest-asyncio
+pytest tests/
+```
+
+---
+
+## Docker — CPU Build (default)
+
+```bash
+docker build -t hindi-asr-api .
+docker run -p 8000:8000 hindi-asr-api
+```
+
+## Docker — GPU Build (CUDA 12.1)
+
+```bash
+docker build \
+  --build-arg PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cu121 \
+  -t hindi-asr-api-gpu .
+
+# Run with GPU access
+docker run --gpus all -p 8000:8000 hindi-asr-api-gpu
+```
+
+The application automatically detects the GPU at startup via `torch.cuda.is_available()`.
 
 ---
 
