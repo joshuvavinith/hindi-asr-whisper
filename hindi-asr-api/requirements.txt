@@ -5,3 +5,9 @@ librosa
 python-multipart
 huggingface_hub
 soundfile
+gradio
+prometheus-fastapi-instrumentator
+slowapi
+pytest
+httpx
+pytest-asyncio
